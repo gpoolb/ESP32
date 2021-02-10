@@ -80,7 +80,7 @@ void setup() {
    *  se anade un pixel adicional por la separación de caracteres 
    *  quedando en 6 pixeles de ancho * 8 pixeles de alto
    */
-  display.fillRect(22, 0, 6 * 5 * 1, 8 * 1, SSD1306_BLACK);  // Se borra el texto anterior de 14 caracteres
+  display.fillRect(22, 0, 6 * 14 * 1, 8 * 1, SSD1306_BLACK);  // Se borra el texto anterior de 14 caracteres
   //display.setFont(&FreeMono9pt7b);
   display.setTextSize(1); // Se elige el tamaño del texto (3X)
   display.setTextColor(SSD1306_WHITE); // Se elige el color del texto (blanco)
