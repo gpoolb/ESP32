@@ -74,13 +74,13 @@ void handleRoot() {  // Método que envía la página WEB al cliente que lo soli
   server.send(200, "text/html", temp);  // Sentencia que envía la página web al cliente
 }  // Termina método que envia la página WEB al cliente que lo solicitó.
 
-void controlLed (void){  // Metodo que controla el estado del led verde
+void controlLed (void){  // Metodo que controla el estado del led incorporado en elNodeMCU
     for ( uint8_t i = 0; i < server.args(); i++ ) { // Se analiza el número de argumentos
     Serial.print (server.argName ( i ));  // Se imprime en el monitor serial el nombre del argumento recibido
     Serial.print (": ");  // Se imprime el separador de nombre y valor
     Serial.println (server.arg ( i ));  // Se imprime al valor del argumento
     if ( server.argName ( i ).equalsIgnoreCase("ledBuiltin") ) {  // Se compara cual es el Led que se desea controlar
-      if (server.arg ( i ).equalsIgnoreCase("on"))  // Si nombre del argumento es ledG se verifica el valor del argumento
+      if (server.arg ( i ).equalsIgnoreCase("on"))  // Si nombre del argumento es ledBuitin se verifica el valor del argumento
         digitalWrite(led, LOW);  // Si el nombre y el valor de argumento es el solicitado se cambia de estado el led que el usuario eligió
       else
         digitalWrite(led, HIGH); // Si el nombre y el valor de argumento es el solicitado se cambia de estado el led que el usuario eligió
