@@ -38,7 +38,7 @@ const char *password = "135A87F298C1"; // Definición que establece la clave de 
 
 WebServer server(80);  // Instancia que controla las funciones del servidor WEB 
                        // y establece el puerto a 80 el cual es el Standart para las páginas WEB
-const int led = 13;  // Definición que establece el pin donde se conecta el LED
+const int led = LED_BUILTIN;  // Definición que establece el pin donde se conecta el LED
 
 void handleRoot() {  // Método que envía la página WEB al cliente que lo solicite
   char temp[800];    // Se define una variable la cual, contendrá la página WEB en forma de texto
