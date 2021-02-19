@@ -60,12 +60,9 @@ void handleRoot() {  // Método que envía la página WEB al cliente que lo soli
     <p>Uptime: %02d:%02d:%02d</p>\n\
     <img src=\"/test.svg\" />\n\
     <p></p>\n\
-    <form method=\"GET\" action=\"/led\" id=\"ledOnForm\">\n\
-      <input type=\"submit\" name=\"ledBuiltin\" value=\"on\">\n\
-    </form>\n\
-    <form method=\"GET\" action=\"/led\" id=\"ledOffForm\">\n\
-      <input type=\"submit\" name=\"ledBuiltin\" value=\"off\">\n\
-    </form>\n\
+    <form method=\"GET\" action=\"/led\" id=\"ledForm\"></form>\n\
+    <input type=\"submit\" form=\"ledForm\" name=\"ledBuiltin\" value=\"on\">\n\
+    <input type=\"submit\" form=\"ledForm\" name=\"ledBuiltin\" value=\"off\">\n\
   </body>\n\
 </html>\n",
 /******************************TERMINA LA PAGINA WEB ***********************************************/
