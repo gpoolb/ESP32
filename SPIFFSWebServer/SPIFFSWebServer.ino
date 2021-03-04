@@ -46,16 +46,13 @@ char charHum[7];  // Almacena el valor de la humedad (limitado a dos decimales)
 long timezone = -6; // Zona horaria, Mexico se ubica en -6
 byte daysavetime = 1;  // Número de horas de atrazo en horario de verano
 struct tm tmstruct ;  // Variable que almacena los valores del tiempo
-time_t now;  // Variable que almacena los valores del tiempo en formato "timestamp"
 
 char responseDataGraphic [1800];
 
 void sendDataTemp() {  // Método que envía la página WEB al cliente que lo solicite
   char temp[150];    // Se define una variable la cual, contendrá la página WEB en forma de texto
   //get time
-  time(&now);
-  localtime_r(&now, &tmstruct);
-
+  getLocalTime(&tmstruct, 0);  // Se obtiene el tiempo local almacenado en memoria (sin esperar a una actualización).
   
   snprintf(temp, 150, \
   /**************************************** INICIA EL FORMATO XML ************************************/
@@ -171,16 +168,13 @@ void setup(void) {  // Método principal para configuración de periféricos y f
   Serial.println(WiFi.localIP());  // Se imprime la direccion IP en el monitor de puerto serial.
 
   Serial.println("Contacting Time Server");
-  configTime(3600*timezone, daysavetime*3600, "time.nist.gov", "0.pool.ntp.org", "1.pool.ntp.org");
+  configTime(3600*timezone, daysavetime*3600, "time.nist.gov", "0.pool.ntp.org", "1.pool.ntp.org");  // Se inicializa la configuración del tiempo (hora y fecha)
     delay(2000);
     tmstruct.tm_year = 0;
-    getLocalTime(&tmstruct, 5000);
+    getLocalTime(&tmstruct, 5000);  // Se obtiene el tiempo actual (si el tiempo no ha sido actualizado desde el servidor de tiempo se espera 5 segundos)
   Serial.printf("\nNow is : %d-%02d-%02d %02d:%02d:%02d\n",(tmstruct.tm_year)+1900,( tmstruct.tm_mon)+1, tmstruct.tm_mday,tmstruct.tm_hour , tmstruct.tm_min, tmstruct.tm_sec);
   Serial.println("");
-  time(&now);
-  localtime_r(&now, &tmstruct);
 
-    
   if(!SPIFFS.begin()){
       Serial.println("Card Mount Failed");
       return;
@@ -279,9 +273,8 @@ void leeSensor (void) {
     }
 
     // get time
-    time(&now);
-    localtime_r(&now, &tmstruct);
-
+    getLocalTime(&tmstruct, 0);  // Se obtiene el tiempo local almacenado en memoria (sin esperar a una actualización).
+    
     snprintf(charTime, sizeof(charTime), "%02d:%02d:%02d", tmstruct.tm_hour, tmstruct.tm_min, tmstruct.tm_sec );
 
     /************* Construcción del response para la gráfica que se muestra en la página web *******************
