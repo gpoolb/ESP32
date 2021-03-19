@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<title>DEMO ESP32</title>
+		<!-- Estilo declarado para el cuerpo de la página web -->
+		<style>
+			body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }
+		</style>
+	</head>
+	<body >
+		<!-- Se crea una tabla -->
+		<TABLE ID="MYTABLE" WIDTH="820" BORDER=1 CELLSPACING=2 CELLPADDING=3>
+			<!-- 1 Cabecera --> 
+			<TR>
+				<!-- Muestra el logo en el primera columna de la primera línea de la tabla -->
+				<TH ALIGN=CENTER >
+					<?!= include('Logo'); ?>
+				</TH>
+				<!-- Muestra el nombre de la empresa en la segunda columna de la primera línea de la tabla -->
+				<TH HEIGHT="70" BGCOLOR=#002060 ALIGN=CENTER COLSPAN="3" ><FONT FACE="CALIBRI" SIZE="+1" COLOR=WHITE >Centro de Investigaci&oacute;n Cient&iacute;fica de Yucat&aacute;n A.C. </font>
+					<br/><FONT FACE="CALIBRI" SIZE="+1" COLOR=WHITE >Departamento de Instrumentaci&oacute;n 2021 </font></TH>
+			</TR>
+			<!-- 2 linea -->
+			<TR>
+				<!-- Muestra los datos enviados por el servidor en la primera y segunda columna de la segunda línea de la tabla -->
+				<TH ALIGN=CENTER COLSPAN="2">
+					<FONT FACE="CALIBRI" SIZE="+1" COLOR=black >Temperatura: <br/></FONT>
+					<FONT FACE="CALIBRI" SIZE="+1" COLOR=green ><text id="TEMP"></text></FONT>
+				</TH>
+				<TH ALIGN=CENTER COLSPAN="2">
+					<FONT FACE="CALIBRI" SIZE="+1" COLOR=black >Humedad: <br/></FONT>
+					<FONT FACE="CALIBRI" SIZE="+1" COLOR=blue ><text id="HUM"></text></FONT>
+				</TH>
+			</TR>
+			<!-- 3 linea -->
+			<TR>
+				<!-- Muestra los datos enviados por el servidor en la tercera línea de la tabla -->
+				<TH ALIGN=CENTER COLSPAN="4">
+				<FONT FACE="CALIBRI" SIZE="+1" COLOR=black >Hora Local <br/></FONT>
+				<FONT FACE="CALIBRI" SIZE="+1" COLOR=darkorange ><text id="TIME"></text></TH></FONT>
+			</TR>
+			<!-- 4 linea -->
+			<TR>
+				<!-- Muestra los datos enviados por el servidor en la cuarta línea de la tabla -->
+				<TH ALIGN=CENTER COLSPAN="4">
+					<form name=navegador > Descargar historial<br/><br/>
+						<select name="cars" id="secciones" onchange="destino()">
+							<option value="no">Elija mes </option>
+							<option value="no"> </option>
+							<option id="secciones2" disabled > </option>
+							<option id="secciones3" disabled > </option>
+							<option id="secciones4" disabled > </option>
+							<option id="secciones5" disabled > </option>
+							<option id="secciones6" disabled > </option>
+							<option id="secciones7" disabled > </option>
+							<option id="secciones8" disabled > </option>
+							<option id="secciones9" disabled > </option>
+							<option id="secciones10" disabled > </option>
+							<option id="secciones11" disabled > </option>
+							<option id="secciones12" disabled > </option>
+							<option id="secciones13" disabled > </option>
+						</select>
+					</form>
+				</TH>
+			</TR>
+			<!-- 5 linea -->
+			<TR>
+				<!-- Muestra la gráfica en la quinta línea de la tabla -->
+				<TH ALIGN=CENTER COLSPAN="4">
+            <?!= include('Graphic'); ?>
+ 				</TH>
+			</TR>
+			<!-- 6 linea -->
+			<TR >
+				<!-- Se utilizan para asignarle tamaño a las columnas de la tabla -->
+				<TH WIDTH="110" ALIGN=CENTER ></TH>
+				<TH WIDTH="290" ALIGN=CENTER ></TH>
+				<TH WIDTH="200" ALIGN=CENTER ></TH>
+				<TH WIDTH="200" ALIGN=CENTER ></TH>
+			</TR>
+		</TABLE>
+		<?!= include('JavaScript'); ?>
+    <!-- Contiene las funciones AJAX (comunicación asíncrona entre cliente servidor) para enviar las peticiones al servidor,
+		 esperar por la respuesta, recibir la información del servidor y mostrar los valores en el lugar correspondiente -->
+    <?!= include('ControlGraphic'); ?> <!-- Contiene las funciones de la gráfica -->
+	</body>
+</html>
