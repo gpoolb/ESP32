@@ -1,0 +1,53 @@
+<svg id="svgObject" xmlns="http://www.w3.org/2000/svg" version="1.1" width="800" height="160" >
+	<style>
+		.caption{
+			font-size: 14px;
+			font-family: Georgia, serif;
+		}
+		.tooltip{
+			font-size: 12px;
+		}
+		.tooltip_bg{
+			fill: white;
+			stroke: black;
+			stroke-width: 1;
+			opacity: 0.85;
+		}
+	</style>
+	
+	<!-- Area de la gráfica -->
+	<rect width="800" height="160" fill="rgb(250, 230, 210)" stroke-width="1" stroke="rgb(0, 0, 0)" />
+	<!-- Etiqueta del texto ubicada en el lado izquierdo de la grafica -->
+	<text font-family="sans-serif" font-size="12" fill="#696f2a" transform="translate(0 250) rotate(270)" >
+		<tspan x="130" y="15" > Temperatura °C </tspan>
+	</text>
+    <!-- Etiqueta del texto ubicada en el lado izquierdo de la gráfica -->
+	<text font-family="sans-serif" font-size="12" fill="#014d6b" transform="translate(0 250) rotate(270)" >
+		<tspan x="140" y="25" > Humedad % </tspan>
+	</text>
+	<!-- Etiqueta del texto ubicada en la parte inferior de la gráfica -->
+	<text font-family="sans-serif" font-size="12" fill="#000000" x="350" y="155" >Ultimas 24 horas</text>
+	<!-- Etiquetas de texto ubicada en el lado derecho de la gráfica -->
+	<g class="TempMaxMin" id="TempMaxMin" visibility="visible">
+		<text font-family="sans-serif" font-size="12" fill="#696f2a" ><tspan x="740" y="35" >Temp Máx</tspan><tspan x="740" y="135" >Temp Mín</tspan></text>
+	</g>
+	<g class="HumMaxMin" id="HumMaxMin" visibility="visible">
+		<text font-family="sans-serif" font-size="12" fill="#014d6b" ><tspan x="740" y="45" >Hum Máx</tspan><tspan x="740" y="145" >Hum Mín</tspan></text>
+	</g>
+	<!-- Grupo de líneas que representan la serie de datos de temperatura -->
+	<g id="lineTempGroup" stroke="green" stroke-width="1" >
+		<line id="lineTemp" x1="30" y1="140" x2="750" y2="140" />
+	</g>
+	<!-- Grupo de líneas que representan la serie de datos de Humedad Relativa -->
+	<g id="lineHumGroup" stroke="blue" stroke-width="1" >
+	</g>
+		<!-- Grupo de rectángulos que delimitan el area de acción del tooltip -->
+	<g id="sectionGroup" fill-opacity="0" style="stroke: none;" onmouseout="HideTooltip(evt)" >
+	</g>
+	<!-- rectángulo que se utiliza de fondo del tooltip -->
+	<rect class="tooltip_bg" id="tooltip_bg" x="0" y="0" rx="4" ry="4" width="10" height="10" visibility="hidden"/>
+	<!-- Grupo de texto que contiene la información que el tooltip exhibe en la gráfica -->
+	<g class="tooltip" id="tooltip" visibility="hidden">
+		<text><tspan>x</tspan><tspan x="0" dy="15">x</tspan><tspan x="0" dy="15">x</tspan><tspan x="0" dy="15">x</tspan></text>
+	</g>
+</svg>
