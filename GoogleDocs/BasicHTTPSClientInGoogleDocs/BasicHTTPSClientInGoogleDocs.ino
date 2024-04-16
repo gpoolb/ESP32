@@ -6,6 +6,9 @@
  * 
  * Gabriel Pool
  * Marzo 2021
+ * 
+ * Modificado:
+ * Abril 2024
 */
 
 // Bibliotecas necesarias para el sensor DHT22
@@ -18,6 +21,13 @@
 #include <ESPmDNS.h>     // Biblioteca requerida para manejo de difusión en la red.
 #include <HTTPClient.h>  // Biblioteca requerida para manejo de redireccionamiento en google sheets
 #include <WiFiClientSecure.h>  // Biblioteca requerida para conectividad por https
+
+#include <ESPping.h>    /* IMPORTANTE: Copie la carpeta "ESPping" ubicada en esta 
+                         * carpeta en X:\Users\MY_USER\Documents\Arduino\libraries 
+                         * ó descárguela usando el gestor de bibliotecas, ubíquela 
+                         * con el nombre: ESPping  e identifique que sea de:
+                         * by dvarrel Versión 1.0.4
+                         */
 
 const char *ssid = "mi_red_wifi"; // Definición que establece el nombre de la red
 const char *password = "mi_password_de_red_wifi"; // Definición que establece la clave de la red
@@ -51,6 +61,7 @@ WiFiMulti WiFiMulti;
 bool EnviaDatosGoogle (void) {  // Este metodo se encarga de enviar los datos del sensor al spreadsheet de Google
 
   WiFiClientSecure *clientGoogle = new WiFiClientSecure;
+  const char * urlPingGoogle = "script.google.com";
   String url = String("https://script.google.com/macros/s/") + GScriptId + "/exec"; // Almacena el recurso que se solicitará al servidor
   int httpCodeGoogle = -1;  // Almacena el código de respuesta del servidor
   bool flag = false;  // Auxiliar para la creación de la instancia del cliente.
@@ -68,43 +79,53 @@ bool EnviaDatosGoogle (void) {  // Este metodo se encarga de enviar los datos de
   
       httpsGoogle.setRedirectLimit(10);  // Se limita a 10 redirecciones 
       httpsGoogle.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);  // Se activa el redireccionamiento
+      httpsGoogle.setConnectTimeout(10000);
+      httpsGoogle.setTimeout(10000);
+
       Serial.print("[HTTPS] begin...\n");
-      if (httpsGoogle.begin(*clientGoogle, url + "?" + payload)) {  // HTTPS Se envía la petición tipo GET al servidor 
-//      if (httpsGoogle.begin(*clientGoogle, url)) {  // HTTPS Se envía la petición tipo POST al servidor
 
-        Serial.print("[HTTPS] URL: ");
-        Serial.print(url);
-        Serial.print("?");
-        Serial.println(payload);
-
-        // start connection, send HTTP header and GET request
-        Serial.print("[HTTPS] GET...\n");
-        httpCodeGoogle = httpsGoogle.GET();  // Se espera el código resultante de la conexión con el servidor
-/*
-        // start connection, send HTTP header and POST request
-        Serial.print("[HTTPS] POST...\n");
-        httpCodeGoogle = httpsGoogle.POST(payload); 
-*/
-        // httpCode will be negative on error
-        // Si el código es positivo indica que el servidor ha respondido.
-        if (httpCodeGoogle > 0) {
-          // HTTP header has been send and Server response header has been handled
-          Serial.printf("[HTTPS] code: %d\n", httpCodeGoogle);
+      /*
+       * Cuando la conectividad falla, el intento de conexion fallida
+       * demora aproximadamente 20 segundos, para evitar eso, se comprueba
+       * previamente que haya conectividad con el servidor
+       */
+      if (Ping.ping(urlPingGoogle, 1) > 0){
+        if (httpsGoogle.begin(*clientGoogle, url + "?" + payload)) {  // HTTPS Se envía la petición tipo GET al servidor 
+  //      if (httpsGoogle.begin(*clientGoogle, url)) {  // HTTPS Se envía la petición tipo POST al servidor
   
-          // file found at server
-          // Si el código es 200 ó 302 indica que se logró la interacción con el servidor
-          if (httpCodeGoogle == HTTP_CODE_OK || httpCodeGoogle == HTTP_CODE_MOVED_PERMANENTLY) {
-            String payloadGoogle = httpsGoogle.getString();  // Se obtiene la respuesta del servidor
-            Serial.println(payloadGoogle);
-            flag = true;
-          }
+          Serial.print("[HTTPS] URL: ");
+          Serial.print(url);
+          Serial.print("?");
+          Serial.println(payload);
+  
+          // start connection, send HTTP header and GET request
+          Serial.print("[HTTPS] GET...\n");
+          httpCodeGoogle = httpsGoogle.GET();  // Se espera el código resultante de la conexión con el servidor
+  /*
+          // start connection, send HTTP header and POST request
+          Serial.print("[HTTPS] POST...\n");
+          httpCodeGoogle = httpsGoogle.POST(payload); 
+  */
+          // httpCode will be negative on error
+          // Si el código es positivo indica que el servidor ha respondido.
+          if (httpCodeGoogle > 0) {
+            // HTTP header has been send and Server response header has been handled
+            Serial.printf("[HTTPS] code: %d\n", httpCodeGoogle);
+    
+            // file found at server
+            // Si el código es 200 ó 302 indica que se logró la interacción con el servidor
+            if (httpCodeGoogle == HTTP_CODE_OK || httpCodeGoogle == HTTP_CODE_MOVED_PERMANENTLY) {
+              String payloadGoogle = httpsGoogle.getString();  // Se obtiene la respuesta del servidor
+              Serial.println(payloadGoogle);
+              flag = true;
+            }
+          } else 
+            Serial.printf("[HTTPS] failed, error: %s\n", httpsGoogle.errorToString(httpCodeGoogle).c_str());
+    
+          httpsGoogle.end();  // Se cierra la conexión
         } else 
-          Serial.printf("[HTTPS] failed, error: %s\n", httpsGoogle.errorToString(httpCodeGoogle).c_str());
-  
-        httpsGoogle.end();  // Se cierra la conexión
-      } else 
-        Serial.printf("[HTTPS] Unable to connect\n");
-
+          Serial.printf("[HTTPS] Unable to connect\n");
+      }
       httpsGoogle.~HTTPClient();  // Se borran las instancias
       // End extra scoping block
     }
@@ -166,18 +187,35 @@ void loop(void) {  // Método principal que se ejecuta indefinidamente
 
   // variables locales necesarias para establecer un intérvalo de tiempo (analogo a un delay())
   unsigned long currentMillis = millis(); // Almacena el valor actual del tiempo
-  unsigned int interval = 60000; // Es el intérvalo de tiempo en el que se actualiza el valor del sensor y el contenido del response(en este caso, cada minuto).
-  static unsigned int previousMillis = 0; // Almacena el último valor de tiempo en que fué ejecutada el contenido del "if",
-  int counter = 0;                       // es decir, la lectura del sensor y el envio del response.
+  unsigned long interval = 60000; // Es el intérvalo de tiempo en el que se actualiza el valor del sensor y el contenido del response(en este caso, cada minuto).
+  static unsigned long previousMillis = -(interval); // Almacena el último valor de tiempo en que fué ejecutada el contenido del "if",
+  static int counter = 0;                 // es decir, la lectura del sensor y el envio del response.
 
   if ((currentMillis - previousMillis >= interval) && (WiFiMulti.run() == WL_CONNECTED)) {
-    previousMillis = currentMillis;
 
     if (leeSensor()){  // Se lee el sensor y se prepara el response para ser enviado
-      while (!EnviaDatosGoogle() && counter < 9)
-        counter++;
+    /*
+     * Se implementa un metodo para recuperar la conectividad con el WIFI
+     * cuando la señal es muy baja
+     */
+      if (!EnviaDatosGoogle()){ // Si falló el envío de información ...
+        Serial.println("Restaurando conectividad...");
+        if (!counter){          // ... y, si es la primera falla ...
+          Serial.println("Iniciando desconexion del WiFi...");
+          WiFi.disconnect(false,false); // ... se desconecta de la red WiFi ...
+          WiFiMulti.run();
+          Serial.println("desconexion del WiFi completada!!!");
+        } else if (counter > 0){       // Si vuelve a fallar ...
+          Serial.println("Reiniciando ESP32!!!");
+          counter = 0;                  // ... se reinicia la cuenta y ...
+          ESP.restart();                // ... se reinicia el ESP32
+        }
+        counter ++;                     // Se cuentan los intentos de envío fallidos
+      } else {                          // Si todo salió bien se reinician las variables.
+        counter = 0;
+        previousMillis = currentMillis;
+      }
     }
-    counter = 0;
   }
 
 }  // Fin del método principal que se ejecuta indefinidamente
